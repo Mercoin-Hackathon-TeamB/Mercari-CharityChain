@@ -6,8 +6,8 @@ from sqlalchemy.orm import sessionmaker, scoped_session
 from db_model import Base
 
 # Spring Bootの設定に基づいたデータベース接続情報
-user_name = 'charity_user'
-password = 'charity_pass'
+user_name = 'charity_user4'
+password = 'charity_pass4'
 host = "localhost:3306"
 database_name = "charity"
 

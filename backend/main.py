@@ -4,7 +4,9 @@ import string
 from fastapi import FastAPI
 # 型ヒントを行えるpydanticをインポート
 from pydantic import BaseModel  
-
+from passlib.context import CryptContext
+# パスワードのコンテキストを設定
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 # 作成したモデル定義ファイルと設定ファイルをインポート
 import db_model as m 
 import db_setting as s 
@@ -72,7 +74,9 @@ async def create_user(data: UserBase):
         # リクエストBodyで受け取ったデータをUserモデルに流し込む
         user.name = data.name
         user.mail = data.mail
-        user.password = data.password
+        # パスワードをハッシュ化
+        hashed_password = pwd_context.hash(data.password)
+        user.password = hashed_password
         user.blockchain_address = data.blockchain_address
 
         # UserモデルをDBに追加
@@ -211,12 +215,12 @@ async def login(data: Login):
     session = s.session()
     try:
         # メールアドレスとパスワードに基づいてユーザーを検索
-        user = session.query(m.Users).filter(m.Users.mail == data.mail, m.Users.password == data.password).first()
-        if user:
-            # 見つかった場合はユーザー情報を返す
+        user = session.query(m.Users).filter(m.Users.mail == data.mail).first()
+        if user and pwd_context.verify(data.password, user.password):
+            # パスワードが一致する場合
             return user
         else:
-            # ユーザーが見つからない場合はエラーメッセージを返す
+            # ユーザーが見つからないか、パスワードが一致しない場合
             return {"message": "Invalid login details"}
     except Exception as e:
         # 何らかのエラーが発生した場合はエラーメッセージを返す

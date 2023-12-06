@@ -23,6 +23,7 @@ class Users(Base):
     created_at = Column(DateTime, server_default=current_timestamp())
 
 
+
 # 寄付受け取りユーザテーブルのモデル
 class DonationRecipientUsers(Base):
     __tablename__ = 'donation_recipient_users'

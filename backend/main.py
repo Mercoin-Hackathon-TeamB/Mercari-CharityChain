@@ -22,6 +22,21 @@ class Login(BaseModel):
     mail: str
     password: str
 
+# 寄付受け取り受理登録用のデータクラス
+class DonationRecipientRegistration(BaseModel):
+    user_id: int
+
+# 寄付ジャンル登録用のデータクラス
+class DonationGenreRegistration(BaseModel):
+    user_id: int
+    donation_genre_name: str
+
+# 送金用のデータクラス
+class TransferMoney(BaseModel):
+    sender_id: int
+    receiver_id: int
+    amount: int
+
 # FastAPIのインスタンス作成
 app = FastAPI()
 
@@ -83,6 +98,43 @@ async def create_user(data: UserBase):
         # 正常・異常どちらでもセッションは終わっておく
         session.close()
 
+# POSTメソッドで /register-donation-genreにアクセスしたときの処理
+# 寄付ジャンル登録
+@app.post("/register-donation-genre", tags=["users"])
+async def register_donation_genre(data: DonationGenreRegistration):
+    # DonationUsersモデルを変数に格納
+    donation_user = m.DonationUsers()
+    # セッションを新規作成
+    session = s.session()
+    try:
+        # 寄付受け取りユーザを特定
+        recipient_user = session.query(m.DonationRecipientUsers).filter(m.DonationRecipientUsers.user_id == data.user_id).first()
+        if not recipient_user:
+            return {"message": "Recipient user not found"}
+
+        # 選択された寄付ジャンルのdonation_idを取得
+        donation = session.query(m.Donations).filter(m.Donations.donation_genre_name == data.donation_genre_name).first()
+        if not donation:
+            return {"message": "Donation genre not found"}
+
+        # DonationUsersモデルにデータを設定
+        donation_user.new_user_id = recipient_user.new_user_id
+        donation_user.donation_id = donation.donation_id
+
+        # DonationUsersモデルをDBに追加
+        session.add(donation_user)
+
+        # 永続的にDBに反映
+        session.commit()
+        return {"message": "Donation genre registration successful"}
+    except Exception as e:
+        # DBへの反映は行わない
+        session.rollback()
+        return {"message": str(e)}
+    finally:
+        # 正常・異常どちらでもセッションは終わっておく
+        session.close()
+
 # DELETEメソッドで /usersにアクセスしたときの処理
 # ユーザーの削除
 @app.delete("/users/{id}", tags=["users"])
@@ -100,6 +152,32 @@ async def delete_user(id: int):
         # DBへの反映は行わない
         session.rollback()
         raise
+    finally:
+        # 正常・異常どちらでもセッションは終わっておく
+        session.close()
+
+# POSTメソッドで /register-donation-recipientにアクセスしたときの処理
+# 寄付受け取り受理登録
+@app.post("/register-donation-recipient", tags=["users"])
+async def register_donation_recipient(data: DonationRecipientRegistration):
+    # DonationRecipientUsersモデルを変数に格納
+    donation_recipient_user = m.DonationRecipientUsers()
+    # セッションを新規作成
+    session = s.session()
+    try:
+        # リクエストBodyで受け取ったuser_idをDonationRecipientUsersモデルに設定
+        donation_recipient_user.user_id = data.user_id
+
+        # DonationRecipientUsersモデルをDBに追加
+        session.add(donation_recipient_user)
+
+        # 永続的にDBに反映
+        session.commit()
+        return {"message": "Donation recipient registration successful"}
+    except Exception as e:
+        # DBへの反映は行わない
+        session.rollback()
+        return {"message": str(e)}
     finally:
         # 正常・異常どちらでもセッションは終わっておく
         session.close()
@@ -145,4 +223,36 @@ async def login(data: Login):
         return {"message": str(e)}
     finally:
         # セッションを閉じる
+        session.close()
+
+# POSTメソッドで /transfer-moneyにアクセスしたときの処理
+# 送金処理
+@app.post("/transfer-money", tags=["users"])
+async def transfer_money(data: TransferMoney):
+    # セッションを新規作成
+    session = s.session()
+    try:
+        # 送金者（sender）の口座を検索
+        sender_account = session.query(m.Accounts).filter(m.Accounts.user_id == data.sender_id).first()
+        if not sender_account or sender_account.balance < data.amount:
+            return {"message": "Insufficient funds or sender not found"}
+
+        # 受取人（receiver）の口座を検索
+        receiver_account = session.query(m.Accounts).filter(m.Accounts.user_id == data.receiver_id).first()
+        if not receiver_account:
+            return {"message": "Receiver not found"}
+
+        # 送金処理
+        sender_account.balance -= data.amount
+        receiver_account.balance += data.amount
+
+        # データベースを更新
+        session.commit()
+        return {"message": "Transfer successful"}
+    except Exception as e:
+        # DBへの反映は行わない
+        session.rollback()
+        return {"message": str(e)}
+    finally:
+        # セッションは終わっておく
         session.close()

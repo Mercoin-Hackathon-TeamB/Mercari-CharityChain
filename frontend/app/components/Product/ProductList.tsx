@@ -1,5 +1,4 @@
 import { Card, CardBody, CardFooter, Image } from "@nextui-org/react";
-import React from "react";
 import list from "./Products.json";
 
 const Products = () => {

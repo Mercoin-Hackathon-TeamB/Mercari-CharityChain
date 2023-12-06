@@ -1,3 +1,5 @@
+import random
+import string
 # FastAPIインポート
 from fastapi import FastAPI
 # 型ヒントを行えるpydanticをインポート
@@ -36,27 +38,47 @@ async def read_users():
     result = s.session.query(m.Users).all()
     return result
 
+# ランダムな文字列を生成する関数
+def generate_random_account_number(length=10):
+    characters = string.ascii_letters + string.digits
+    return ''.join(random.choice(characters) for i in range(length))
+
 # POSTメソッドで /usersにアクセスしたときの処理
 # ユーザーの新規登録
 @app.post("/users", tags=["users"])
 async def create_user(data: UserBase):
     # Usersモデルを変数に格納
     user = m.Users()
+    # Accountsモデルを変数に格納
+    account = m.Accounts()
     # セッションを新規作成
     session = s.session()
-    s.session.add(user)
     try:
-        #リクエストBodyで受け取ったデータを流し込む
+        # リクエストBodyで受け取ったデータをUserモデルに流し込む
         user.name = data.name
         user.mail = data.mail
         user.password = data.password
         user.blockchain_address = data.blockchain_address
-        #永続的にDBに反映
+
+        # UserモデルをDBに追加
+        session.add(user)
+        session.flush()  # user_idを取得するためにflushを実行
+
+        # Accountsモデルにデータを設定
+        account.account_number = generate_random_account_number()
+        account.user_id = user.user_id
+        account.balance = 1000
+
+        # AccountsモデルをDBに追加
+        session.add(account)
+
+        # 永続的にDBに反映
         session.commit()
-    except:
+        return {"message": "User created successfully"}
+    except Exception as e:
         # DBへの反映は行わない
         session.rollback()
-        raise
+        return {"message": str(e)}
     finally:
         # 正常・異常どちらでもセッションは終わっておく
         session.close()

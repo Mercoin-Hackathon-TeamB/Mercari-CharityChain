@@ -1,7 +1,10 @@
+import React from "react";
+import Product from "@/app/components/Purchase/Product";
+
 const Purchase = ({ params }: { params: { id: string } }) => {
   return (
     <div>
-      <div>{params.id}</div>
+      <Product id={params.id} />
     </div>
   );
 };

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.7.0 <0.9.0;
 
-contract DesasterDonate {
+contract DisasterDonate {
     // 寄付の合計額を保持する変数
     uint256 public totalDonations;
 

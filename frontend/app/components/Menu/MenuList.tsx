@@ -1,14 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import {
-  Button,
-  Card,
-  CardBody,
-  CardFooter,
-  Image,
-  Link,
-} from "@nextui-org/react";
+import { Card, CardBody, CardFooter, Image, Link } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
 
 const MenuPage = () => {

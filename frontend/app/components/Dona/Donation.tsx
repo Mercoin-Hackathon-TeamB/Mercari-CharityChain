@@ -11,6 +11,7 @@ import React from "react";
 import donations from "@/app/components/Donation/Donations.json";
 import { useRouter } from "next/navigation";
 import { donate } from "@/SC/child";
+import confetti from "canvas-confetti";
 
 const userAddress = "0xe46efa37e07cdfb6293482069288eb55e35e6504";
 
@@ -19,6 +20,18 @@ interface DonationProps {
 }
 
 const Donation: React.FC<DonationProps> = ({ id }) => {
+  const handleConfetti = () => {
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      angle: 90,
+      startVelocity: 60,
+      gravity: 0.5,
+      shapes: ["circle"], // 'circle' または 'square' が花弁の形に近い
+      colors: ["#ff7eb9", "#ff65a3", "#7afcff", "#feff9c"], // 明るく柔らかい色彩
+      zIndex: 10,
+    });
+  };
   const router = useRouter();
   const donation = donations.find((p) => p.id === parseInt(id));
 
@@ -27,34 +40,9 @@ const Donation: React.FC<DonationProps> = ({ id }) => {
   const handleDonationClick = async () => {
     try {
       donate(userAddress, amount); //ブロックチェーンに送金
-      const accessToken = localStorage.getItem("accessToken"); // アクセストークンを取得
-      if (!accessToken) {
-        // アクセストークンが存在しない場合の処理
-        console.error("No access token found");
-        return;
-      }
+      handleConfetti(); //祝福の花吹雪
 
-      const response = await fetch("http://localhost:8081/transfer-money", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`, // アクセストークンをヘッダーに設定
-        },
-        body: JSON.stringify({
-          // sender_id: ログインユーザーのIDはサーバー側でトークンから取得
-          receiver_id: "oka",
-          amount: amount,
-        }),
-      });
-
-      if (response.ok) {
-        // 成功処理
-        alert("Transfer successful");
-        // 必要に応じてページ遷移など
-      } else {
-        // エラー処理
-        alert("Transfer failed");
-      }
+      alert("Transfer successful");
     } catch (error) {
       console.error("Error during transfer: ", error);
     } finally {

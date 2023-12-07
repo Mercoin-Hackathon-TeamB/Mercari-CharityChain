@@ -36,7 +36,8 @@ Address_list = [
   "0x9c569cb60ad050e2a17ba2d64b5bcf1dcd22af47",
 ];
 
-//distribute(Address_list, "0xe46efa37e07cdfb6293482069288eb55e35e6504");
+distribute(Address_list, "0xe46efa37e07cdfb6293482069288eb55e35e6504");
 
 getBalance();
+
 module.exports = { donate, getBalance, distribute };

@@ -24,12 +24,19 @@ const getBalance = async () => {
   console.log(`Balance: ${balance}`);
 };
 
-const distribute = (Address_list, amount) => {
-  return contract.methods.distributeDonations(Address_list).send({
+const distribute = async (Address_list, fromAddress) => {
+  await contract.methods.distributeDonations(Address_list).send({
     from: fromAddress,
-    value: donationAmount,
-    gas: 100000,
+    gas: 1000000,
   });
 };
 
-module.exports = { donate, getBalance };
+Address_list = [
+  "0xe46efa37e07cdfb6293482069288eb55e35e6504",
+  "0x9c569cb60ad050e2a17ba2d64b5bcf1dcd22af47",
+];
+
+//distribute(Address_list, "0xe46efa37e07cdfb6293482069288eb55e35e6504");
+
+getBalance();
+module.exports = { donate, getBalance, distribute };

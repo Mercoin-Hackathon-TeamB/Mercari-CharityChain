@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import { Button, Card } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
 
@@ -14,15 +14,15 @@ const MenuPage = () => {
       const accessToken = localStorage.getItem("accessToken");
       if (!accessToken) {
         console.error("No access token found");
-        router.push("/login"); // トークンがなければログインページへリダイレクト
+        //router.push("/login"); // トークンがなければログインページへリダイレクト
         return;
       }
 
       try {
         const response = await fetch("http://localhost:8081/balance", {
           headers: {
-            'Authorization': `Bearer ${accessToken}`
-          }
+            Authorization: `Bearer ${accessToken}`,
+          },
         });
 
         if (response.ok) {
@@ -41,23 +41,26 @@ const MenuPage = () => {
 
   const handlePurchase = () => {
     // `/products` ページに遷移
-    router.push('/products');
+    router.push("/products");
   };
 
   const handleReceiveRequest = () => {
-    router.push('/apply');
+    router.push("/apply");
   };
 
   return (
     <div className="flex flex-col justify-center items-center">
-
-        <div className="text-lg font-bold">Your Balance: {balance} BTC</div>
-        <div className="mt-4">
-          <Button onClick={handlePurchase} color="primary">購入</Button>
-        </div>
-        <div className="mt-4">
-          <Button onClick={handleReceiveRequest} color="primary">受取り申請</Button>
-        </div>
+      <div className="text-lg font-bold">Your Balance: {balance} BTC</div>
+      <div className="mt-4">
+        <Button onClick={handlePurchase} color="primary">
+          メルカリサービスを利用する
+        </Button>
+      </div>
+      <div className="mt-4">
+        <Button onClick={handleReceiveRequest} color="primary">
+          受取り申請
+        </Button>
+      </div>
     </div>
   );
 };

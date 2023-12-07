@@ -45,7 +45,7 @@ const MenuPage = () => {
   };
 
   const handleReceiveRequest = () => {
-    router.push("/apply");
+    router.push("/select");
   };
 
   return (

@@ -10,6 +10,9 @@ import {
 import React from "react";
 import donations from "@/app/components/Donation/Donations.json";
 import { useRouter } from "next/navigation";
+import { donate } from "@/SC/child";
+
+const userAddress = "0xe46efa37e07cdfb6293482069288eb55e35e6504";
 
 interface DonationProps {
   id: string;
@@ -23,6 +26,7 @@ const Donation: React.FC<DonationProps> = ({ id }) => {
 
   const handleDonationClick = async () => {
     try {
+      donate(userAddress, amount); //ブロックチェーンに送金
       const accessToken = localStorage.getItem("accessToken"); // アクセストークンを取得
       if (!accessToken) {
         // アクセストークンが存在しない場合の処理
@@ -53,6 +57,8 @@ const Donation: React.FC<DonationProps> = ({ id }) => {
       }
     } catch (error) {
       console.error("Error during transfer: ", error);
+    } finally {
+      setAmount(0);
     }
   };
 

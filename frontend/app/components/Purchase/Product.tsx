@@ -1,13 +1,27 @@
-import { Card, CardBody, CardFooter, Image } from "@nextui-org/react";
+"use client";
+import { Card, CardBody, CardFooter, Image,Button } from "@nextui-org/react";
 import React from "react";
 import products from "@/app/components/Product/Products.json";
+import { useRouter } from "next/navigation";
 
 interface ProductProps {
   id: string;
 }
 
 const Product: React.FC<ProductProps> = ({ id }) => {
+  const router = useRouter();
   const product = products.find((p) => p.id === parseInt(id));
+
+
+  const handleDonationClick = () => {
+    // 募金ページへリダイレクト、または募金処理をここで行う
+    router.push("/donation");
+  };
+
+  const handleReturnClick = () => {
+    // 募金ページへリダイレクト、または募金処理をここで行う
+    router.push("/products");
+  };
 
   // 商品が見つからない場合の処理
   if (!product) {
@@ -15,6 +29,7 @@ const Product: React.FC<ProductProps> = ({ id }) => {
   }
 
   return (
+    <div>
     <Card shadow="sm" isPressable className="max-w-xs mt-2">
       <CardBody className="overflow-visible p-0">
         <Image
@@ -30,6 +45,12 @@ const Product: React.FC<ProductProps> = ({ id }) => {
         <p className="text-default-500">{product.price}</p>
       </CardFooter>
     </Card>
+        <div className="text-center mt-4">
+        <div className="text-2xl font-bold mb-3">ご購入ありがとうございました！</div>
+        <Button color="primary" onClick={handleDonationClick}>募金しますか？</Button>
+        <Button color="primary" onClick={handleReturnClick}>戻る</Button>
+      </div>
+    </div>
   );
 };
 

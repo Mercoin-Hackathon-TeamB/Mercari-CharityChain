@@ -12,7 +12,32 @@ const LoginForm = () => {
 
   //ログインボタンを押された時の処理をここに書く
   const handleSubmit = async () => {
-    router.push("/products");
+    try {
+      // APIリクエストの設定
+      const response = await fetch("http://localhost:8081/login", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          mail: email,
+          password: password
+        })
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        // ここで必要な処理を行う（例：トークンを保存、ユーザーデータを取得など）
+        // 成功したら指定のページにリダイレクトする
+        router.push("/products");
+      } else {
+      // レスポンスが成功ではない場合、エラーメッセージを表示
+      alert("Login failed. Please check your email and password.");
+      }
+    } catch (error) {
+      console.error("Error during login: ", error);
+      alert("An error occurred. Please try again later.");
+    }
   };
 
   const toggleVisibility = () => setIsVisible(!isVisible);

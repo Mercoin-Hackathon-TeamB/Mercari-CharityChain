@@ -2,6 +2,7 @@ import random
 import string
 # FastAPIインポート
 from fastapi import FastAPI
+from fastapi import HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 # 型ヒントを行えるpydanticをインポート
 from pydantic import BaseModel  
@@ -234,13 +235,12 @@ async def login(data: Login):
             # パスワードが一致する場合
             return user
         else:
-            # ユーザーが見つからないか、パスワードが一致しない場合
-            return {"message": "Invalid login details"}
+            # パスワードが一致しないか、ユーザーが見つからない場合、401 Unauthorizedを返す
+            raise HTTPException(status_code=401, detail="Invalid login details")
     except Exception as e:
-        # 何らかのエラーが発生した場合はエラーメッセージを返す
-        return {"message": str(e)}
+        # その他のエラーの場合
+        raise HTTPException(status_code=500, detail=str(e))
     finally:
-        # セッションを閉じる
         session.close()
 
 # POSTメソッドで /transfer-moneyにアクセスしたときの処理

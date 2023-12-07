@@ -30,6 +30,7 @@ const LoginForm = () => {
         // ここで必要な処理を行う（例：トークンを保存、ユーザーデータを取得など）
         // 成功したら指定のページにリダイレクトする
         localStorage.setItem("accessToken", data.access_token);  // トークンを保存
+        console.log(data.access_token)
         router.push("/menu");
       } else {
       // レスポンスが成功ではない場合、エラーメッセージを表示

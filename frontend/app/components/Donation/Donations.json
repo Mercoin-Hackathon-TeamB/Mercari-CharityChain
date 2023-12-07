@@ -2,37 +2,37 @@
     {
       "id": 1,
       "title": "貧困層",
-      "img": "/orange.png"
+      "img": "/1.png"
     },
     {
       "id": 2,
       "title": "災害被害者",
-      "img": "/raspberry.png"
+      "img": "/2.png"
     },
     {
       "id": 3,
       "title": "病気や障害を持つ",
-      "img": "/lemon.png"
+      "img": "/3.png"
     },
     {
       "id": 4,
       "title": "難民",
-      "img": "/avocado.png"
+      "img": "/4.png"
     },
     {
       "id": 5,
       "title": "教育を受けられない",
-      "img": "/banana.png"
+      "img": "/5.png"
     },
     {
       "id": 6,
       "title": "高齢者",
-      "img": "/watermelon.png"
+      "img": "/6.png"
     },
     {
         "id": 7,
         "title": "被虐待者",
-        "img": "/watermelon.png"
+        "img": "/7.png"
       }
   ]
   

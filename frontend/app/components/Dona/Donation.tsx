@@ -53,6 +53,20 @@ return (
     <div>
         {/* 省略 */}
         <div className="text-center mt-4">
+        <Card shadow="sm" isPressable className="max-w-xs mt-2"> 
+        {/* <CardBody className="overflow-visible p-0"> */}
+            <b>{donation.title}</b>    
+        {/* </CardBody>    */}
+        <CardBody className="overflow-visible p-0">
+        <Image
+          shadow="sm"
+          radius="lg"
+          width="100%"
+          className="object-cover"
+          src={donation.img}
+            />
+        </CardBody>
+        </Card>
             <div className="text-2xl font-bold mb-3">何BTC送りますか？</div>
             <Input 
                 type="number" 

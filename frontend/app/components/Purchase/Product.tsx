@@ -47,7 +47,8 @@ const Product: React.FC<ProductProps> = ({ id }) => {
     </Card>
         <div className="text-center mt-4">
         <div className="text-2xl font-bold mb-3">ご購入ありがとうございました！</div>
-        <Button color="primary" onClick={handleDonationClick}>募金しますか？</Button>
+        <div className="text-2xl mb-3">募金しますか？</div>
+        <Button color="primary" onClick={handleDonationClick}>募金する</Button>
         <Button color="primary" onClick={handleReturnClick}>戻る</Button>
       </div>
     </div>

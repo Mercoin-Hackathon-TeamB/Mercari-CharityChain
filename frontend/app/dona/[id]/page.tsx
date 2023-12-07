@@ -6,9 +6,9 @@ const DonationPage = ({ params }: { params: { id: string } }) => { // 名前を�
   return (
     <div>
       <Header />
-      <DonationComponent id={params.id} /> // 更新された名前を使用
+      <DonationComponent id={params.id} />
     </div>
   );
 };
 
-export default DonationPage; // 更新された名前をエクスポート
+export default DonationPage; 

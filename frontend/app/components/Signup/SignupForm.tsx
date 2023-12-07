@@ -15,7 +15,37 @@ const SignUpForm = () => {
   const [passwordConf, setPasswordConf] = useState("");
 
   const handleSubmit = async () => {
-    router.push("/products");
+    const requestBody = {
+      name: userName,
+      mail: email,
+      password: password,
+      blockchain_address: wallet
+    };
+  
+    const apiUrl = 'http://localhost:8081/users';  // バックエンドの完全な URL
+  
+    try {
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(requestBody)
+      });
+      // レスポンスの処理
+    if (response.ok) {
+      // レスポンスが正常の場合
+      const responseData = await response.json();
+      console.log('Registration Successful:', responseData);
+      // 任意の処理、例えばユーザーを別のページにリダイレクトする等
+      router.push('/products');
+    } else {
+      // エラーの場合
+      console.error('Registration Failed:', response.statusText);
+    }
+  } catch (error) {
+    console.error('Error occurred:', error);
+  }
   };
 
   const togglePassVisibility = () => setIsPassVisible(!isPassVisible);

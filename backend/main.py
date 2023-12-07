@@ -2,6 +2,7 @@ import random
 import string
 # FastAPIインポート
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 # 型ヒントを行えるpydanticをインポート
 from pydantic import BaseModel  
 from passlib.context import CryptContext
@@ -10,6 +11,12 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 # 作成したモデル定義ファイルと設定ファイルをインポート
 import db_model as m 
 import db_setting as s 
+
+# CORS ミドルウェアの設定
+origins = [
+    "http://localhost:3000",  # フロントエンドのオリジン
+    # 必要に応じて他のオリジンも追加
+]
 
 # データクラス定義
 # POSTとPUTで使うデータクラス
@@ -42,6 +49,13 @@ class TransferMoney(BaseModel):
 # FastAPIのインスタンス作成
 app = FastAPI()
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
 async def root():

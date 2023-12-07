@@ -60,6 +60,10 @@ class TransferMoney(BaseModel):
     receiver_id: int
     amount: int
 
+class GenreName(BaseModel):
+    donation_genre_name: str
+
+
 # FastAPIのインスタンス作成
 app = FastAPI()
 
@@ -129,6 +133,30 @@ async def create_user(data: UserBase):
     finally:
         # 正常・異常どちらでもセッションは終わっておく
         session.close()
+
+@app.post("/search-blockchain-addresses", tags=["users"])
+async def search_blockchain_addresses(genre: GenreName):
+    session = s.session()
+    try:
+        # 寄付ジャンルを検索
+        donation = session.query(m.Donations).filter(m.Donations.donation_genre_name == genre.donation_genre_name).first()
+        if not donation:
+            return {"message": "Donation genre not found"}
+
+        # 寄付ジャンルに関連するブロックチェーンアドレスを検索
+        addresses = session.query(m.Users.blockchain_address)\
+            .join(m.DonationRecipientUsers, m.Users.user_id == m.DonationRecipientUsers.user_id)\
+            .join(m.DonationUsers, m.DonationRecipientUsers.new_user_id == m.DonationUsers.new_user_id)\
+            .filter(m.DonationUsers.donation_id == donation.donation_id)\
+            .all()
+
+        # ブロックチェーンアドレスのリストを返す
+        return {"blockchain_addresses": [address[0] for address in addresses]}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        session.close()
+
 
 # POSTメソッドで /register-donation-genreにアクセスしたときの処理
 # 寄付ジャンル登録

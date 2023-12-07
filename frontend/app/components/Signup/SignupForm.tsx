@@ -38,6 +38,9 @@ const SignUpForm = () => {
       const responseData = await response.json();
       console.log('Registration Successful:', responseData);
       // 任意の処理、例えばユーザーを別のページにリダイレクトする等
+      // ここでユーザー情報やトークンをローカルストレージに保存
+      localStorage.setItem('user', JSON.stringify(responseData.user));
+      localStorage.setItem('accessToken', responseData.accessToken);
       router.push('/products');
     } else {
       // エラーの場合

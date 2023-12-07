@@ -7,9 +7,8 @@ import {
   Input,
   CardFooter,
 } from "@nextui-org/react";
-import React from "react";
+import React, { useState } from "react";
 import donations from "@/app/components/Donation/Donations.json";
-import { useRouter } from "next/navigation";
 import { donate } from "@/SC/child";
 import confetti from "canvas-confetti";
 
@@ -20,6 +19,7 @@ interface DonationProps {
 }
 
 const Donation: React.FC<DonationProps> = ({ id }) => {
+  const [isDonated, setIsDonated] = useState(false); // 送金完了の状態
   const handleConfetti = () => {
     confetti({
       particleCount: 100,
@@ -32,7 +32,7 @@ const Donation: React.FC<DonationProps> = ({ id }) => {
       zIndex: 10,
     });
   };
-  const router = useRouter();
+
   const donation = donations.find((p) => p.id === parseInt(id));
 
   const [amount, setAmount] = React.useState(0); // 送金額の状態
@@ -41,8 +41,7 @@ const Donation: React.FC<DonationProps> = ({ id }) => {
     try {
       donate(userAddress, amount); //ブロックチェーンに送金
       handleConfetti(); //祝福の花吹雪
-
-      alert("Transfer successful");
+      setIsDonated(true); // 送金完了の状態を更新
     } catch (error) {
       console.error("Error during transfer: ", error);
     } finally {
@@ -53,6 +52,7 @@ const Donation: React.FC<DonationProps> = ({ id }) => {
   return (
     <div>
       <div className="text-center mt-4">
+        {isDonated && <div className="text-3xl m-3">募金が完了しました！</div>}
         <div className="flex items-center justify-center">
           <Card shadow="sm" isPressable className="max-w-xs mt-2">
             <CardBody className="overflow-visible p-0">
@@ -81,7 +81,7 @@ const Donation: React.FC<DonationProps> = ({ id }) => {
           />
         </div>
         <Button className="mt-3" color="primary" onClick={handleDonationClick}>
-          送金する
+          募金する
         </Button>
       </div>
     </div>

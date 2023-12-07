@@ -7,17 +7,30 @@ from fastapi.middleware.cors import CORSMiddleware
 # 型ヒントを行えるpydanticをインポート
 from pydantic import BaseModel  
 from passlib.context import CryptContext
+from datetime import datetime, timedelta
+from jose import JWTError, jwt
 # パスワードのコンテキストを設定
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 # 作成したモデル定義ファイルと設定ファイルをインポート
 import db_model as m 
 import db_setting as s 
 
+SECRET_KEY = "your_secret_key"  # 安全なランダムキーを生成して使用する
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
+
 # CORS ミドルウェアの設定
 origins = [
     "http://localhost:3000",  # フロントエンドのオリジン
     # 必要に応じて他のオリジンも追加
 ]
+
+def create_access_token(data: dict):
+    to_encode = data.copy()
+    expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
 
 # データクラス定義
 # POSTとPUTで使うデータクラス
@@ -232,10 +245,9 @@ async def login(data: Login):
         # メールアドレスとパスワードに基づいてユーザーを検索
         user = session.query(m.Users).filter(m.Users.mail == data.mail).first()
         if user and pwd_context.verify(data.password, user.password):
-            # パスワードが一致する場合
-            return user
+            access_token = create_access_token(data={"sub": user.mail})
+            return {"access_token": access_token, "token_type": "bearer"}
         else:
-            # パスワードが一致しないか、ユーザーが見つからない場合、401 Unauthorizedを返す
             raise HTTPException(status_code=401, detail="Invalid login details")
     except Exception as e:
         # その他のエラーの場合

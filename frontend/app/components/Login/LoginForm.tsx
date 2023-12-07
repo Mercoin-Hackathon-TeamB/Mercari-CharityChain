@@ -29,9 +29,11 @@ const LoginForm = () => {
         const data = await response.json();
         // ここで必要な処理を行う（例：トークンを保存、ユーザーデータを取得など）
         // 成功したら指定のページにリダイレクトする
-        router.push("/products");
+        localStorage.setItem("accessToken", data.access_token);  // トークンを保存
+        router.push("/menu");
       } else {
       // レスポンスが成功ではない場合、エラーメッセージを表示
+      const errorData = await response.json();
       alert("Login failed. Please check your email and password.");
       }
     } catch (error) {

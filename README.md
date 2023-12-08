@@ -29,7 +29,7 @@
 
 ## 技術スタック
 
-- React（CRA）
+- React
 - FastAPI
 - MySQL
   
